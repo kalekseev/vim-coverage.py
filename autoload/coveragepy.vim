@@ -21,8 +21,7 @@ sys.path.insert(0, python_module_path)
 import vim_coverage_env
 vim_coverage_env.init()
 import vim_coverage
-if not vim.eval("s:supports_sign_groups"):
-    vim_coverage.downgrade_editor()
+vim.eval("s:supports_sign_groups") and vim_coverage.downgrade_editor()
 vim_coverage.editor.sign_offset = vim.eval("g:coveragepy_sign_offset")
 del sys.path[:1]
 endpython3
