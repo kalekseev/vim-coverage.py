@@ -1,0 +1,39 @@
+repos:
+  -   repo: https://github.com/pre-commit/mirrors-isort
+      rev: v4.3.21
+      hooks:
+      -   id: isort
+
+  -   repo: https://github.com/psf/black
+      rev: 19.10b0
+      hooks:
+      -   id: black
+          language_version: python3.7
+          types: [python]
+
+  -   repo: https://gitlab.com/pycqa/flake8
+      rev: 3.7.9
+      hooks:
+      -   id: flake8
+          language_version: python3.7
+
+  -   repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v2.4.0
+      hooks:
+      -   id: trailing-whitespace
+      -   id: end-of-file-fixer
+      -   id: debug-statements
+      -   id: check-merge-conflict
+      -   id: mixed-line-ending
+          args: ['--fix=lf']
+
+  -   repo: local
+      hooks:
+      -   id: mypy
+          name: mypy
+          language: system
+          entry: mypy
+          args: ["--ignore-missing-imports", "--scripts-are-modules"]
+          require_serial: true
+          types: [python]
+          exclude: "^tests"
