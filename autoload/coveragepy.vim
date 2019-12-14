@@ -1,31 +1,3 @@
-if !exists("g:coveragepy_virtualenv")
-  if has("nvim")
-    let g:coveragepy_virtualenv = "~/.local/share/nvim/coveragepy"
-  else
-    let g:coveragepy_virtualenv = "~/.vim/coveragepy"
-  endif
-endif
-
-let g:coveragepy_sign_offset = get(g:, 'coveragepy_sign_offset', 5000000)
-
-let s:plugin_path = expand('<sfile>:p:h')
-let s:supports_sign_groups = has('nvim-0.4.2') || (v:version >= 801 && has('patch614'))
-
-python3 << endpython3
-import os
-import sys
-import vim
-plugin_path = vim.eval("s:plugin_path")
-python_module_path = os.path.abspath('%s/../python' % (plugin_path))
-sys.path.insert(0, python_module_path)
-import vim_coverage_env
-vim_coverage_env.init()
-import vim_coverage
-vim.eval("s:supports_sign_groups") and vim_coverage.downgrade_editor()
-vim_coverage.editor.sign_offset = vim.eval("g:coveragepy_sign_offset")
-del sys.path[:1]
-endpython3
-
 function! s:FindCoverageFile() abort
     let l:cov_file = findfile('.coverage', '.;')
     if empty(l:cov_file)
@@ -48,40 +20,30 @@ function! s:GetCoverageParams() abort
     return {"cov_file": l:cov_file, "filename": l:filename}
 endfunction
 
-function coveragepy#Coverage()
+function coveragepy#Show()
     let l:params = s:GetCoverageParams()
     if !empty(l:params)
-        :py3 vim_coverage.coverage_show(**vim.eval("l:params"))
+        :call CoveragePyShow(l:params.cov_file, l:params.filename)
     endif
 endfunction
 
-function coveragepy#CoverageToggle()
+function coveragepy#Toggle()
     let l:params = s:GetCoverageParams()
     if !empty(l:params)
-        :py3 vim_coverage.coverage_toggle(**vim.eval("l:params"))
+        :call CoveragePyToggle(l:params.cov_file, l:params.filename)
     endif
 endfunction
 
-function coveragepy#CoverageLine()
+function coveragepy#NextProblem()
     let l:params = s:GetCoverageParams()
     if !empty(l:params)
-        let l:params.line = line(".")
-        :py3 vim_coverage.coverage_line(**vim.eval("l:params"))
+        :call CoveragePyNext(l:params.cov_file, l:params.filename, line("."))
     endif
 endfunction
 
-function coveragepy#CoverageNext()
+function coveragepy#PytestContext()
     let l:params = s:GetCoverageParams()
     if !empty(l:params)
-        let l:params.line = line(".")
-        :py3 vim_coverage.coverage_next_problem(**vim.eval("l:params"))
+        :call CoveragePyTestContext(l:params.cov_file, l:params.filename, line("."))
     endif
-endfunction
-
-function coveragepy#CoverageUpgrade()
-    :py3 vim_coverage_env.init(upgrade=True)
-endfunction
-
-function coveragepy#CoverageVersion()
-    :py3 vim_coverage.coverage_version()
 endfunction

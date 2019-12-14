@@ -40,4 +40,4 @@ jobs:
           pip install -r dev-requirements.txt
       - name: Test
         run: |
-          PYTHONPATH=./python/ py.test --cov=python --cov-branch --cov-context=test
+          PYTHONPATH=./rplugin/python3/ py.test --cov=rplugin --cov-branch --cov-context=test

@@ -1,6 +1,6 @@
 " vim-coverage.py
 " Author: Konstantin Alekseev
-" Version: 0.1
+" Version: 0.2
 
 
 if v:version < 700 || !has('python3')
@@ -22,9 +22,29 @@ sign define coverageOk text=▴▴ texthl=CoveragePyOk
 sign define coverageWarn text=◊◊ texthl=CoveragePyWarn
 sign define coverageErr text=▵▵ texthl=CoveragePyError
 
-command! CoveragePy :call coveragepy#Coverage()
-command! CoveragePyToggle :call coveragepy#CoverageToggle()
-command! CoveragePyLine :call coveragepy#CoverageLine()
-command! CoveragePyNext :call coveragepy#CoverageNext()
-command! CoveragePyUpgrade :call coveragepy#CoverageUpgrade()
-command! CoveragePyVersion :call coveragepy#CoverageVersion()
+command! CoveragePy :call coveragepy#Show()
+command! CoveragePyToggle :call coveragepy#Toggle()
+command! CoveragePytestContext :call coveragepy#PytestContext()
+command! CoveragePyNext :call coveragepy#NextProblem()
+
+if has('nvim')
+    finish
+endif
+
+let s:py = yarp#py3('vim_coveragepy_wrap')
+
+func! CoveragePyShow(c, f)
+    return s:py.call('show', a:c, a:f)
+endfunc
+
+func! CoveragePyToggle(c, f)
+    return s:py.call('toggle', a:c, a:f)
+endfunc
+
+func! CoveragePyNext(c, f, l)
+    return s:py.call('go_next_problem', a:c, a:f, a:l)
+endfunc
+
+func! CoveragePyTestContext(c, f, l)
+    return s:py.call('show_pytest_context', a:c, a:f, a:l)
+endfunc
