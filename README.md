@@ -3,8 +3,12 @@
 The aim of the project is:
 
 - Display coverage information in SignColumn
-- Show tests where current line was executed (pytest and coverage 5+ only)
 - Go to next uncovered chunk of code
+- Show tests where current line was executed (pytest and coverage 5+ only)
+
+Features in action:
+
+![img](https://user-images.githubusercontent.com/367259/70853794-084e6480-1ec4-11ea-9176-8426529fb591.gif)
 
 ## Install
 
