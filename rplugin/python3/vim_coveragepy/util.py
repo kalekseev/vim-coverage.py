@@ -13,6 +13,10 @@ if TYPE_CHECKING:
 PYTEST_CONTEXT = r"(?P<path>[^:]+)::(?P<testclass>\w+::)?(?P<test>\w+)(?P<params>\[[^\]]+\])?\|?(?P<step>\w+)?"
 
 
+class Abort(Exception):
+    pass
+
+
 class Editor:
     SIGN_WARNING = "coverageWarn"
     SIGN_ERROR = "coverageErr"
@@ -52,6 +56,9 @@ class Editor:
 
     def message(self, message: str) -> None:
         self._vim.out_write(message + "\n")
+
+    def err_message(self, message: str) -> None:
+        self._vim.err_write(message + "\n")
 
     def show_coverage(self, filename: str, signs: List[Dict[str, Any]]) -> None:
         if not signs:
@@ -132,19 +139,31 @@ class VimCoveragePy:
 
     @property
     def coverage_module(self) -> "coverage":
-        if not self._coverage:
+        if not self._coverage:  # pragma: no cover
             if os.environ.get("VIRTUAL_ENV"):
                 path = glob.glob(
                     os.environ["VIRTUAL_ENV"] + "/lib/python*/site-packages"
                 )
                 if path:
                     sys.path.insert(0, path[0])
-                import coverage
-
-                if path:
-                    del sys.path[:1]
+                try:
+                    import coverage
+                except ImportError:
+                    self.editor.err_message(
+                        "Can't import coverage module from $VIRTUAL_ENV."
+                    )
+                    raise Abort()
+                finally:
+                    if path:
+                        del sys.path[:1]
             else:
-                import coverage
+                try:
+                    import coverage
+                except ImportError:
+                    self.editor.err_message(
+                        "Can't import coverage from g:python3_host_prog site-packages. You may also want to run vim with $VIRTUAL_ENV set."
+                    )
+                    raise Abort()
             self._coverage = coverage
         return self._coverage
 
