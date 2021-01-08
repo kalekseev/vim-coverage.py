@@ -1,10 +1,10 @@
-# Vim 8.0+ / NeoVim Python Coverage plugin
+# Vim 8.0+ / NeoVim Python Coverage 5.0+ plugin
 
 The aim of the project is:
 
 - Display coverage information in SignColumn
 - Go to next uncovered chunk of code
-- Show tests where current line was executed (pytest and coverage 5+ only)
+- Show tests where current line was executed (pytest only)
 
 Features in action:
 
